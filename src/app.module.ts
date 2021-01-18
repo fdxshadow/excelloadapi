@@ -9,6 +9,9 @@ import { AdministradorModule } from './administrador/administrador.module';
 import { TareasModule } from './tareas/tareas.module';
 import { SeriesModule } from './series/series.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
+import { HttpErrorFilter } from './shared/http-error.filter';
+import { LoggingInterceptor } from './shared/logging.interceptor';
 
 @Module({
   imports: [
@@ -22,6 +25,10 @@ import { UsuariosModule } from './usuarios/usuarios.module';
     UsuariosModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    { provide: APP_FILTER, useClass: HttpErrorFilter },
+    { provide: APP_INTERCEPTOR, useClass: LoggingInterceptor },
+  ],
 })
 export class AppModule {}
