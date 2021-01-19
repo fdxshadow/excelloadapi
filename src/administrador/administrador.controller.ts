@@ -19,22 +19,22 @@ export class AdministradorController {
   }
 
   @Post()
-  createadministrador(@Body() data) {
+  createAdministrador(@Body() data) {
     return this.administradorService.create(data);
   }
 
   @Get(':id')
-  findadministrador(@Param('id') id: number) {
+  findAdministrador(@Param('id') id: number) {
     return this.administradorService.getOne(id);
   }
 
   @Put()
-  updateadministrador(@Param('id') id: number, @Body() data) {
+  updateAdministrador(@Param('id') id: number, @Body() data) {
     return this.administradorService.update(id, data);
   }
 
   @Delete()
-  destroyadministrador(@Param('id') id: number) {
+  destroyAdministrador(@Param('id') id: number) {
     return this.administradorService.destroy(id);
   }
 }

@@ -15,32 +15,41 @@ export class AdministradorService {
   }
 
   async create(data) {
-    const empresa = this.administradorRepository.create(data);
-    await this.administradorRepository.save(empresa);
-    return empresa;
+    const administrador = this.administradorRepository.create(data);
+    await this.administradorRepository.save(administrador);
+    return administrador;
   }
 
   async getOne(id: number) {
-    const empresa = await this.administradorRepository.findOne({ id });
-    if (!empresa) {
-      throw new HttpException('Empresa no encontrada', HttpStatus.NOT_FOUND);
+    const administrador = await this.administradorRepository.findOne({ id });
+    if (!administrador) {
+      throw new HttpException(
+        'Administrador no encontrada',
+        HttpStatus.NOT_FOUND,
+      );
     }
-    return empresa;
+    return administrador;
   }
 
   async update(id: number, data) {
-    const empresa = await this.administradorRepository.findOne({ id });
-    if (!empresa) {
-      throw new HttpException('Empresa no encontrada', HttpStatus.NOT_FOUND);
+    const administrador = await this.administradorRepository.findOne({ id });
+    if (!administrador) {
+      throw new HttpException(
+        'Administrador no encontrada',
+        HttpStatus.NOT_FOUND,
+      );
     }
     await this.administradorRepository.update({ id }, data);
     return this.administradorRepository.findOne({ id });
   }
 
   async destroy(id: number) {
-    const empresa = await this.administradorRepository.findOne({ id });
-    if (!empresa) {
-      throw new HttpException('Empresa no encontrada', HttpStatus.NOT_FOUND);
+    const administrador = await this.administradorRepository.findOne({ id });
+    if (!administrador) {
+      throw new HttpException(
+        'Administrador no encontrada',
+        HttpStatus.NOT_FOUND,
+      );
     }
     await this.administradorRepository.delete({ id });
     return { deleted: true };
