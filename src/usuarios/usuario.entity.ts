@@ -1,7 +1,7 @@
-import { AdministradorEntity } from 'src/administrador/administrador.entity';
-import { GerenteEntity } from 'src/gerentes/gerente.entity';
-import { SerieEntity } from 'src/series/serie.entity';
-import { OneToMany, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, BeforeInsert } from 'typeorm';
+
+import * as bcrypt from 'bcrypt';
+import * as jwt from 'jsonwebtoken';
 
 @Entity('usuarios')
 export class UsuarioEntity {
@@ -9,28 +9,41 @@ export class UsuarioEntity {
   id: number;
 
   @Column()
-  nombre: string;
-
-  @Column()
   email: string;
 
   @Column()
   password: string;
 
-  @OneToMany(
-    () => AdministradorEntity,
-    (administrador) => administrador.usuario,
-  )
-  administradores: AdministradorEntity[];
+  @Column()
+  tipo: string;
 
-  @OneToMany(() => GerenteEntity, (gerente) => gerente.usuario)
-  gerentes: GerenteEntity[];
-
-  @OneToMany(() => SerieEntity, (serie) => serie.usuario)
-  series: SerieEntity[];
-
-  /*@BeforeInsert()
+  @BeforeInsert()
   async hashPassword() {
     this.password = await bcrypt.hash(this.password, 10);
-  }*/
+  }
+  toResponseObject(showToken = false) {
+    const { id, email, tipo } = this;
+    const response = { id, email, tipo };
+    if (showToken) {
+      response['token'] = this.token;
+    }
+    return response;
+  }
+
+  async comparePassword(pass: string) {
+    return await bcrypt.compare(pass, this.password);
+  }
+
+  private get token() {
+    const { id, email, tipo } = this;
+    return jwt.sign(
+      {
+        id,
+        email,
+        tipo,
+      },
+      process.env.SECRET,
+      { expiresIn: '7d' },
+    );
+  }
 }

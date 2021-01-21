@@ -2,11 +2,12 @@ import { ObraEntity } from 'src/obras/obra.entity';
 import { TareaEntity } from 'src/tareas/tarea.entity';
 import { UsuarioEntity } from 'src/usuarios/usuario.entity';
 import {
-  ManyToOne,
   OneToOne,
   OneToMany,
   Entity,
   PrimaryGeneratedColumn,
+  Column,
+  JoinColumn,
 } from 'typeorm';
 
 @Entity('series')
@@ -14,12 +15,16 @@ export class SerieEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => UsuarioEntity, (usuario) => usuario.series)
-  usuario: UsuarioEntity;
+  @Column()
+  nombre: string;
 
   @OneToOne(() => ObraEntity, (obra) => obra.id)
   obra: ObraEntity;
 
-  @OneToMany(() => TareaEntity, (tarea) => tarea.serie)
-  series: TareaEntity[];
+  @OneToMany(() => TareaEntity, (tarea) => tarea.series)
+  tarea: TareaEntity[];
+
+  @OneToOne(() => UsuarioEntity)
+  @JoinColumn()
+  usuario: UsuarioEntity;
 }

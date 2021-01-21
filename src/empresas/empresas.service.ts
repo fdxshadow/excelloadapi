@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EmpresaEntity } from './empresa.entity';
-import { Empresa } from './empresa.interface';
+import { Empresa } from './empresa.dto';
 
 @Injectable()
 export class EmpresasService {

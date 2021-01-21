@@ -12,6 +12,6 @@ export class TareaEntity {
   @Column()
   fecha_inicio: Date;
 
-  @ManyToOne(() => SerieEntity, (serie) => serie.series)
-  serie: SerieEntity;
+  @ManyToOne(() => SerieEntity, (serie) => serie.tarea)
+  series: SerieEntity;
 }
