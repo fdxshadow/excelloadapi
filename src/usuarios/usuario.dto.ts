@@ -17,4 +17,5 @@ export class UsuarioRegistro {
   password: string;
   @IsNotEmpty()
   tipo: string;
+  obras: any;
 }

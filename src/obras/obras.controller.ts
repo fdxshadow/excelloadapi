@@ -7,6 +7,7 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
+import { Obra } from './obra.dto';
 import { ObrasService } from './obras.service';
 
 @Controller('obras')
@@ -18,8 +19,14 @@ export class ObrasController {
     return this.obraService.getAll();
   }
 
+  @Get('byEmpresa/:id_empresa')
+  findObraByEmpresa(@Param('id_empresa') id: number) {
+    console.log(id);
+    return this.obraService.getByEmpresa(id);
+  }
+
   @Post()
-  createObra(@Body() data) {
+  createObra(@Body() data: Obra) {
     return this.obraService.create(data);
   }
 

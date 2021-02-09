@@ -32,4 +32,10 @@ export class UsuariosController {
   register(@Body() data: UsuarioRegistro) {
     return this.usuariosService.register(data);
   }
+
+  @Get('miUsuario')
+  @UseGuards(new AuthGuard())
+  getMyUsuario(@Body() data) {
+    return this.usuariosService.getUsuario(data.id_token);
+  }
 }

@@ -45,4 +45,14 @@ export class ObrasService {
     await this.obraRepository.delete({ id });
     return { deleted: true };
   }
+
+  async getByEmpresa(id_empresa: number) {
+    const obras = await this.obraRepository.find({
+      where: { empresa: id_empresa },
+    });
+    if (!obras) {
+      throw new HttpException('Obra no encontrada', HttpStatus.NOT_FOUND);
+    }
+    return obras;
+  }
 }

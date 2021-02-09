@@ -2,8 +2,9 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AdministradorEntity } from 'src/administrador/administrador.entity';
 import { GerenteEntity } from 'src/gerentes/gerente.entity';
-import { SerieEntity } from 'src/series/serie.entity';
-import { Repository } from 'typeorm';
+import { ObraEntity } from 'src/obras/obra.entity';
+import { SupervisorEntity } from 'src/supervisor/supervisor.entity';
+import { In, Repository } from 'typeorm';
 import { UsuarioLogin, UsuarioRegistro } from './usuario.dto';
 import { UsuarioEntity } from './usuario.entity';
 
@@ -16,8 +17,10 @@ export class UsuariosService {
     private administradorRepository: Repository<AdministradorEntity>,
     @InjectRepository(GerenteEntity)
     private gerenteRepository: Repository<GerenteEntity>,
-    @InjectRepository(SerieEntity)
-    private serieRepository: Repository<SerieEntity>,
+    @InjectRepository(SupervisorEntity)
+    private supervisorRepository: Repository<SupervisorEntity>,
+    @InjectRepository(ObraEntity)
+    private obraRepository: Repository<ObraEntity>,
   ) {}
 
   async getAll() {
@@ -33,7 +36,8 @@ export class UsuariosService {
     return usuario.toResponseObject(true);
   }
   async register(data: UsuarioRegistro) {
-    const { nombre, email, password, tipo } = data;
+    console.log('usuario solicitando registrarse', data);
+    const { nombre, email, password, tipo, obras } = data;
     let usuario = await this.usuarioRepository.findOne({ where: { email } });
     if (usuario) {
       throw new BadRequestException('Usuario existente');
@@ -48,17 +52,34 @@ export class UsuariosService {
         });
         await this.administradorRepository.save(administrador);
         break;
-      case 'serie':
-        const serie = await this.serieRepository.create({ nombre, usuario });
-        await this.serieRepository.save(serie);
+      case 'supervisor':
+        const obraUsuario = await this.obraRepository.findOne({ id: obras });
+        const supervisor = await this.supervisorRepository.create({
+          nombre,
+          usuario,
+          obra: obraUsuario,
+        });
+        await this.supervisorRepository.save(supervisor);
         break;
       case 'gerente':
+        const obrasUsuario = await this.obraRepository.find({
+          where: { id: In(obras) },
+        });
         const gerente = await this.gerenteRepository.create({
           nombre,
           usuario,
+          obras: obrasUsuario,
         });
         await this.gerenteRepository.save(gerente);
         break;
+    }
+    return usuario.toResponseObject();
+  }
+
+  async getUsuario(id: number) {
+    const usuario = await this.usuarioRepository.findOne({ id });
+    if (!usuario) {
+      throw new BadRequestException('Usuario no encontrada');
     }
     return usuario.toResponseObject();
   }

@@ -7,11 +7,12 @@ import { ObrasModule } from './obras/obras.module';
 import { GerentesModule } from './gerentes/gerentes.module';
 import { AdministradorModule } from './administrador/administrador.module';
 import { TareasModule } from './tareas/tareas.module';
-import { SeriesModule } from './series/series.module';
+import { SupervisorModule } from './supervisor/supervisor.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { HttpErrorFilter } from './shared/http-error.filter';
 import { LoggingInterceptor } from './shared/logging.interceptor';
+import { PlanificacionModule } from './planificacion/planificacion.module';
 
 @Module({
   imports: [
@@ -21,8 +22,9 @@ import { LoggingInterceptor } from './shared/logging.interceptor';
     GerentesModule,
     AdministradorModule,
     TareasModule,
-    SeriesModule,
+    SupervisorModule,
     UsuariosModule,
+    PlanificacionModule,
   ],
   controllers: [AppController],
   providers: [

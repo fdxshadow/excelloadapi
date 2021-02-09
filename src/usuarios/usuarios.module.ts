@@ -2,7 +2,8 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AdministradorEntity } from 'src/administrador/administrador.entity';
 import { GerenteEntity } from 'src/gerentes/gerente.entity';
-import { SerieEntity } from 'src/series/serie.entity';
+import { ObraEntity } from 'src/obras/obra.entity';
+import { SupervisorEntity } from 'src/supervisor/supervisor.entity';
 import { UsuarioEntity } from './usuario.entity';
 import { UsuariosController } from './usuarios.controller';
 import { UsuariosService } from './usuarios.service';
@@ -13,7 +14,8 @@ import { UsuariosService } from './usuarios.service';
       UsuarioEntity,
       AdministradorEntity,
       GerenteEntity,
-      SerieEntity,
+      SupervisorEntity,
+      ObraEntity,
     ]),
   ],
   controllers: [UsuariosController],
