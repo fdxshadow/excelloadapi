@@ -1,5 +1,6 @@
-import { ObraEntity } from 'src/obras/obra.entity';
-import { Column, ManyToOne, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {PlanificacionEntity} from 'src/planificacion/planificacion.entity'
+import { Column, ManyToOne, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { SemanasEntity } from './semanas.entity';
 
 @Entity('tareas')
 export class TareaEntity {
@@ -33,6 +34,9 @@ export class TareaEntity {
   @Column()
   bloque: string;
 
-  @ManyToOne(() => ObraEntity, (obra) => obra.tareas)
-  obra: ObraEntity;
+  @ManyToOne(() => PlanificacionEntity, (planificacion) => planificacion.tareas)
+  planificacion: PlanificacionEntity;
+
+  @OneToMany(() => SemanasEntity, (semana) => semana.tarea)
+  semanas: SemanasEntity[];
 }

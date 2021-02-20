@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { GerenteEntity } from 'src/gerentes/gerente.entity';
 import { Repository } from 'typeorm';
 import { ObraEntity } from './obra.entity';
 
@@ -8,10 +9,13 @@ export class ObrasService {
   constructor(
     @InjectRepository(ObraEntity)
     private obraRepository: Repository<ObraEntity>,
+    @InjectRepository(GerenteEntity)
+    private gerenteRepository: Repository<GerenteEntity>,
+
   ) {}
 
   async getAll() {
-    return await this.obraRepository.find();
+    return await this.obraRepository.find({relations: ["empresa"]});
   }
 
   async create(data) {
@@ -21,7 +25,7 @@ export class ObrasService {
   }
 
   async getOne(id: number) {
-    const obra = await this.obraRepository.findOne({ id });
+    const obra = await this.obraRepository.findOne({ where:{id}, relations: ['empresa']});
     if (!obra) {
       throw new HttpException('Obra no encontrada', HttpStatus.NOT_FOUND);
     }
@@ -54,5 +58,13 @@ export class ObrasService {
       throw new HttpException('Obra no encontrada', HttpStatus.NOT_FOUND);
     }
     return obras;
+  }
+
+  async getByGerente(id_usuario: number) {
+    const gerente = await (await this.gerenteRepository.findOne({relations: ['obras'], where: {usuario:id_usuario}})).obras;
+    if (!gerente) {
+      throw new HttpException('Gerente no encontrado', HttpStatus.NOT_FOUND);
+    }
+    return gerente;
   }
 }

@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-//import { getConnection } from 'typeorm';
-//import * as bcrypt from 'bcrypt';
+import { getConnection } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 import 'dotenv/config';
 
 const port = process.env.PORT || 8080;
@@ -10,7 +10,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
   await app.listen(port);
 
-  //const pass = await bcrypt.hash('77313388', 10);
+  const pass = await bcrypt.hash('77313388', 10);
   //usuario
   /*await getConnection()
     .query(

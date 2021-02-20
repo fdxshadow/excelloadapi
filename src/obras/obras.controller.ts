@@ -25,6 +25,12 @@ export class ObrasController {
     return this.obraService.getByEmpresa(id);
   }
 
+  @Get('byGerente/:id_gerente')
+  findObraByGerente(@Param('id_gerente') id: number) {
+    console.log(id);
+    return this.obraService.getByGerente(id);
+  }
+
   @Post()
   createObra(@Body() data: Obra) {
     return this.obraService.create(data);

@@ -1,6 +1,5 @@
 import { EmpresaEntity } from 'src/empresas/empresa.entity';
 import { SupervisorEntity } from 'src/supervisor/supervisor.entity';
-import { TareaEntity } from 'src/tareas/tarea.entity';
 import {
   Column,
   Entity,
@@ -19,9 +18,6 @@ export class ObraEntity {
 
   @ManyToOne(() => EmpresaEntity, (empresa) => empresa.obras)
   empresa: EmpresaEntity;
-
-  @OneToMany(() => TareaEntity, (tarea) => tarea.obra)
-  tareas: ObraEntity[];
 
   @OneToMany(() => SupervisorEntity, (supervisor) => supervisor.obra)
   supervisores: ObraEntity[];
