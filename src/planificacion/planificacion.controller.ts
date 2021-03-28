@@ -1,6 +1,8 @@
 import {
   Body,
   Controller,
+  Get,
+  Param,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -19,4 +21,10 @@ export class PlanificacionController {
       obra: data.obra,
     });
   }
+
+  @Get('curva_s/:id_obra')
+  getCurvaS(@Param('id_obra') id_obra:number){
+    return this.planificacionService.getDataCurvaS(id_obra);
+  }
+
 }

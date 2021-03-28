@@ -1,8 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  Param,
   Post,
+  Put,
   UseGuards,
   UsePipes,
 } from '@nestjs/common';
@@ -38,4 +41,20 @@ export class UsuariosController {
   getMyUsuario(@Body() data) {
     return this.usuariosService.getUsuario(data.id_token);
   }
+
+  @Delete(':id')
+  @UseGuards(new AuthGuard(), new RolesGuard(Role.Admin))
+  deleteUsuario(@Param('id') id: number){
+    return this.usuariosService.deleteUsuario(id);
+  }
+
+
+  @Put(':id')
+  @UseGuards(new AuthGuard(), new RolesGuard(Role.Admin))
+  updateUsuarioData(@Param('id') id: number, @Body() data:any){
+    return this.usuariosService.updateUsuarioData(id,data.nombre,data.email);
+  }
+
+
+
 }

@@ -20,6 +20,12 @@ export class TareaEntity {
   duracion: string;
 
   @Column()
+  peso: string;
+
+  @Column()
+  trabajo:string;
+
+  @Column()
   plan: string;
 
   @Column()

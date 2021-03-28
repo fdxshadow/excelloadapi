@@ -13,6 +13,9 @@ export class SemanasEntity {
     @Column()
     carga_trabajo:number;
 
+    @Column()
+    trabajo_efectivo:string;
+
     @ManyToOne(() => TareaEntity, (tarea) => tarea.semanas)
     tarea: TareaEntity;
 }

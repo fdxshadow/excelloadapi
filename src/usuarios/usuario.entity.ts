@@ -17,13 +17,16 @@ export class UsuarioEntity {
   @Column()
   tipo: string;
 
+  @Column()
+  nombre:string;
+
   @BeforeInsert()
   async hashPassword() {
     this.password = await bcrypt.hash(this.password, 10);
   }
   toResponseObject(showToken = false) {
-    const { id, email, tipo } = this;
-    const response = { id, email, tipo };
+    const { id, email, tipo,nombre } = this;
+    const response = { id, email, tipo, nombre};
     if (showToken) {
       response['token'] = this.token;
     }

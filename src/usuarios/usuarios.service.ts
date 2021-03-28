@@ -42,12 +42,11 @@ export class UsuariosService {
     if (usuario) {
       throw new BadRequestException('Usuario existente');
     }
-    usuario = await this.usuarioRepository.create({ email, password, tipo });
+    usuario = await this.usuarioRepository.create({ email, password, tipo,nombre });
     await this.usuarioRepository.save(usuario);
     switch (tipo) {
       case 'administrador':
         const administrador = await this.administradorRepository.create({
-          nombre,
           usuario,
         });
         await this.administradorRepository.save(administrador);
@@ -55,7 +54,6 @@ export class UsuariosService {
       case 'supervisor':
         const obraUsuario = await this.obraRepository.findOne({ id: obras });
         const supervisor = await this.supervisorRepository.create({
-          nombre,
           usuario,
           obra: obraUsuario,
         });
@@ -66,7 +64,6 @@ export class UsuariosService {
           where: { id: In(obras) },
         });
         const gerente = await this.gerenteRepository.create({
-          nombre,
           usuario,
           obras: obrasUsuario,
         });
@@ -82,5 +79,20 @@ export class UsuariosService {
       throw new BadRequestException('Usuario no encontrada');
     }
     return usuario.toResponseObject();
+  }
+
+  async deleteUsuario(id: number){
+    return await this.usuarioRepository.delete({ id });
+  }
+
+  async updateUsuarioData(id:number,nombre:string,email:string){
+    const usuario = await this.usuarioRepository.findOne({ id });
+    if (!usuario) {
+      throw new BadRequestException('Usuario no encontrada');
+    }
+    usuario.nombre = nombre;
+    usuario.email = email;
+
+    return await this.usuarioRepository.save(usuario);
   }
 }

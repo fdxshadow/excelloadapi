@@ -14,14 +14,12 @@ import {
 export class GerenteEntity {
   @PrimaryGeneratedColumn()
   id: number;
-  @Column()
-  nombre: string;
 
   @ManyToMany(() => ObraEntity)
   @JoinTable()
   obras: ObraEntity[];
 
-  @OneToOne(() => UsuarioEntity)
+  @OneToOne(() => UsuarioEntity, { onDelete: 'CASCADE' })
   @JoinColumn()
   usuario: UsuarioEntity;
 }

@@ -1,8 +1,8 @@
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsEmail, IsNotEmpty, isValidationOptions } from 'class-validator';
 
 export class UsuarioLogin {
   @IsNotEmpty()
-  @IsEmail()
+  @IsEmail(undefined,{message:"El campo email debe tener formato de email"})
   email: string;
   @IsNotEmpty()
   password: string;

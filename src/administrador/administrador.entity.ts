@@ -12,10 +12,7 @@ export class AdministradorEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  nombre: string;
-
-  @OneToOne(() => UsuarioEntity)
+  @OneToOne(() => UsuarioEntity, { onDelete: 'CASCADE' })
   @JoinColumn()
   usuario: UsuarioEntity;
 }
