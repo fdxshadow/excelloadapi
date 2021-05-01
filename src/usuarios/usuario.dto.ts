@@ -18,4 +18,5 @@ export class UsuarioRegistro {
   @IsNotEmpty()
   tipo: string;
   obras: any;
+  area_responsable:string;
 }

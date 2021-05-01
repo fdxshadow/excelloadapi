@@ -6,7 +6,9 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from 'src/shared/auth.guard';
 import { TareasService } from './tareas.service';
 
 @Controller('tareas')
@@ -17,6 +19,13 @@ export class TareasController {
   findAllTareas() {
     return this.tareaService.getAll();
   }
+
+  @Get('/obra_usuario')
+  @UseGuards(new AuthGuard())
+  getByObraUsuario(@Body() data){
+    return this.tareaService.getByObraAssignUser(data.id_token);
+  }
+  
 
   @Post()
   createTarea(@Body() data) {
@@ -37,4 +46,22 @@ export class TareasController {
   destroyTarea(@Param('id') id: number) {
     return this.tareaService.destroy(id);
   }
+  @Get('/area/:area_responsable')
+  @UseGuards(new AuthGuard())
+  getTareasByArea(@Param('area_responsable') area: string, @Body() data){
+    return this.tareaService.getTareasByArea(area,data.id_token);
+  }
+
+  @Get('/semanas/:tarea_id')
+  @UseGuards(new AuthGuard())
+  getSemanasByTarea(@Param('tarea_id') tarea_id:number){
+    return this.tareaService.getSemanasByTarea(tarea_id);
+  }
+
+  @Post('/semanas/')
+  @UseGuards(new AuthGuard())
+  updateSemana(@Body() data){
+    return this.tareaService.updatePorcAvanceSem(data);
+  }
+
 }

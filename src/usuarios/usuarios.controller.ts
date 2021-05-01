@@ -20,7 +20,7 @@ import { RolesGuard } from 'src/shared/roles.guard';
 export class UsuariosController {
   constructor(private usuariosService: UsuariosService) {}
   @Get()
-  @UseGuards(new AuthGuard(), new RolesGuard(Role.Admin))
+  //@UseGuards(new AuthGuard(), new RolesGuard(Role.Admin))
   findAllUsuarios() {
     return this.usuariosService.getAll();
   }
@@ -40,6 +40,7 @@ export class UsuariosController {
   @UseGuards(new AuthGuard())
   getMyUsuario(@Body() data) {
     return this.usuariosService.getUsuario(data.id_token);
+    //return this.usuariosService.getUsuario(1);
   }
 
   @Delete(':id')
@@ -52,7 +53,8 @@ export class UsuariosController {
   @Put(':id')
   @UseGuards(new AuthGuard(), new RolesGuard(Role.Admin))
   updateUsuarioData(@Param('id') id: number, @Body() data:any){
-    return this.usuariosService.updateUsuarioData(id,data.nombre,data.email);
+    console.log(data.obras);
+    return this.usuariosService.updateUsuarioData(id,data.nombre,data.email,data.obras);
   }
 
 

@@ -50,4 +50,9 @@ export class ObrasController {
   destroyObra(@Param('id') id: number) {
     return this.obraService.destroy(id);
   }
+
+  @Get('areas/:obra_id')
+  getAreasByObra(@Param('obra_id') obra_id: number){
+    return this.obraService.getAreaByObra(obra_id);
+  }
 }

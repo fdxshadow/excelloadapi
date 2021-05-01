@@ -1,7 +1,8 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadGatewayException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GerenteEntity } from 'src/gerentes/gerente.entity';
-import { Repository } from 'typeorm';
+import { PlanificacionEntity } from 'src/planificacion/planificacion.entity';
+import { createQueryBuilder, Repository } from 'typeorm';
 import { ObraEntity } from './obra.entity';
 
 @Injectable()
@@ -11,6 +12,8 @@ export class ObrasService {
     private obraRepository: Repository<ObraEntity>,
     @InjectRepository(GerenteEntity)
     private gerenteRepository: Repository<GerenteEntity>,
+    @InjectRepository(PlanificacionEntity)
+    private planificacionRepository: Repository<PlanificacionEntity>,
 
   ) {}
 
@@ -66,5 +69,19 @@ export class ObrasService {
       throw new HttpException('Gerente no encontrado', HttpStatus.NOT_FOUND);
     }
     return gerente;
+  }
+
+
+  async getAreaByObra(obra_id: number){
+    const areas = await createQueryBuilder('planificacion','p')
+    .select("DISTINCT t.area_responsable as nombreArea")
+    .innerJoin("tareas","t","p.id=t.planificacion")
+    .where(`obraId = ${obra_id}`)
+    .getRawMany();
+
+    if(areas.length==0){
+      throw new NotFoundException("No se puede crear un supervisor en una obra sin planificacion");
+    }
+    return areas;
   }
 }

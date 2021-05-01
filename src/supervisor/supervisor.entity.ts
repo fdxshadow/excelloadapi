@@ -14,10 +14,16 @@ export class SupervisorEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column()
+  area_responsable:string;
+
   @OneToOne(() => UsuarioEntity,{ onDelete: 'CASCADE' })
   @JoinColumn()
   usuario: UsuarioEntity;
 
   @ManyToOne(() => ObraEntity, (obra) => obra.supervisores)
   obra: ObraEntity;
+
+
+
 }
