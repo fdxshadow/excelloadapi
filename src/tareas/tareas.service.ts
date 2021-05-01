@@ -75,7 +75,7 @@ export class TareasService {
   }
 
   async getSemanasByTarea(tarea_id:number){
-    const semana = await this.semanaRepository.find({select:['id','semana','trabajo_efectivo'],where:{tarea:tarea_id}});
+    const semana = await this.semanaRepository.find({select:['id','semana','trabajo_efectivo','carga_trabajo'],where:{tarea:tarea_id}});
     return semana;
   }
 
