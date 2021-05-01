@@ -76,7 +76,20 @@ export class TareasService {
 
   async getSemanasByTarea(tarea_id:number){
     const semana = await this.semanaRepository.find({select:['id','semana','trabajo_efectivo','carga_trabajo'],where:{tarea:tarea_id}});
-    return semana;
+    const resultSemana = await this.getCalcularPorcEsperado(tarea_id);
+    return await semana.map(s=>{
+      s['carga_trabajo'] =  (Number(s['carga_trabajo'])*100)/Number(resultSemana);
+      return s;
+    });
+  }
+
+
+  async getCalcularPorcEsperado(id_tarea){
+    const sumEsperado = await createQueryBuilder('semanas','s')
+    .select("SUM(carga_trabajo) as sumCarga")
+    .where(`s.tareaId = ${id_tarea}`)
+    .getRawOne();
+    return sumEsperado['sumCarga'];
   }
 
   async updatePorcAvanceSem(semana){
