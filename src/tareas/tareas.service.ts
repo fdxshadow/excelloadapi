@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { createQueryBuilder, Repository } from 'typeorm';
+import { createQueryBuilder, LessThan, LessThanOrEqual, Repository } from 'typeorm';
 import { SemanasEntity } from './semanas.entity';
 import { TareaEntity } from './tarea.entity';
 
@@ -70,7 +70,19 @@ export class TareasService {
     .where(`s.usuarioId = ${id_usuario}`)
     .andWhere(`t.area_responsable='${area}'`)
     .getRawMany();
-    return areas;
+
+
+    let result = await  areas.map(async tA=>{
+      tA['comienzo'] = tA['comienzo'].toLocaleDateString();
+      tA['fin'] = tA['fin'].toLocaleDateString();
+      let semanaTarea = await this.semanaRepository.findOne({where:{tarea:tA['id'],semana: LessThanOrEqual(18)}, order:{semana:'DESC'}});
+      tA['porc_real'] = semanaTarea?semanaTarea.trabajo_efectivo:0;
+      let cargaTotal = await this.getCalcularPorcEsperado(tA['id']);
+      tA['porc_esperado'] = cargaTotal != null  && semanaTarea? (semanaTarea.carga_trabajo*100/cargaTotal).toFixed(2):0;
+      return tA;
+    });
+
+    return Promise.all(result);
 
   }
 
@@ -84,12 +96,24 @@ export class TareasService {
   }
 
 
-  async getCalcularPorcEsperado(id_tarea){
-    const sumEsperado = await createQueryBuilder('semanas','s')
+  async getCalcularPorcEsperado(id_tarea,){
+    /*if(semana>0){
+      const sumEsperado = await createQueryBuilder('semanas','s')
+      .select("SUM(carga_trabajo) as sumCarga")
+      .where(`s.tareaId = ${id_tarea}`)
+      .andWhere(`s.semana <= ${semana}`)
+      .getRawOne();
+      //console.log(sumEsperado);
+      return sumEsperado['sumCarga']!=null?sumEsperado['sumCarga']:0;
+    }else{*/
+      const sumEsperado = await createQueryBuilder('semanas','s')
     .select("SUM(carga_trabajo) as sumCarga")
     .where(`s.tareaId = ${id_tarea}`)
     .getRawOne();
     return sumEsperado['sumCarga'];
+    //}
+
+    
   }
 
   async updatePorcAvanceSem(semana){

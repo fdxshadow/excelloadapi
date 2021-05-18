@@ -15,10 +15,12 @@ export class ObraEntity {
 
   @Column()
   nombre: string;
+  @Column()
+  fecha_inicio: Date;
 
   @ManyToOne(() => EmpresaEntity, (empresa) => empresa.obras)
   empresa: EmpresaEntity;
 
   @OneToMany(() => SupervisorEntity, (supervisor) => supervisor.obra)
-  supervisores: ObraEntity[];
+  supervisores: SupervisorEntity[];
 }

@@ -1,9 +1,12 @@
-import { BadGatewayException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { BadGatewayException, BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GerenteEntity } from 'src/gerentes/gerente.entity';
 import { PlanificacionEntity } from 'src/planificacion/planificacion.entity';
+import { SupervisorEntity } from 'src/supervisor/supervisor.entity';
 import { createQueryBuilder, Repository } from 'typeorm';
 import { ObraEntity } from './obra.entity';
+import * as moment from  'moment';
+import { PlanificacionService } from 'src/planificacion/planificacion.service';
 
 @Injectable()
 export class ObrasService {
@@ -12,8 +15,9 @@ export class ObrasService {
     private obraRepository: Repository<ObraEntity>,
     @InjectRepository(GerenteEntity)
     private gerenteRepository: Repository<GerenteEntity>,
-    @InjectRepository(PlanificacionEntity)
-    private planificacionRepository: Repository<PlanificacionEntity>,
+    @InjectRepository(SupervisorEntity)
+    private supervisorRepository: Repository<SupervisorEntity>,
+    private planificacionService: PlanificacionService
 
   ) {}
 
@@ -64,11 +68,16 @@ export class ObrasService {
   }
 
   async getByGerente(id_usuario: number) {
-    const gerente = await (await this.gerenteRepository.findOne({relations: ['obras'], where: {usuario:id_usuario}})).obras;
+    const gerente = await (await this.gerenteRepository.findOne({relations: ['obras','obras.empresa'], where: {usuario:id_usuario}})).obras;
     if (!gerente) {
       throw new HttpException('Gerente no encontrado', HttpStatus.NOT_FOUND);
     }
-    return gerente;
+    const response = await gerente.map(async obra=>{
+      obra['semana_actual']= await this.getSemanaActual(this.getMonday(obra.fecha_inicio));;
+      obra['porc_avance_real']=Number(await (await this.planificacionService.getDataCurvaS(obra.id)).dataReal[obra['semana_actual']-1]).toFixed(2);
+      return obra;
+    });
+    return Promise.all(response);
   }
 
 
@@ -83,5 +92,44 @@ export class ObrasService {
       throw new NotFoundException("No se puede crear un supervisor en una obra sin planificacion");
     }
     return areas;
+  }
+
+  async getEstadoObra(id_usuario:number){
+    const semanaInicio = await this.supervisorRepository.findOne({where:{usuario:id_usuario},relations:['obra']});
+    if(!semanaInicio){
+      throw new BadRequestException("No se encuentra obra asociada al supervisor");
+    }
+    let lunesSemanaInicio = await this.getMonday(semanaInicio.obra.fecha_inicio);
+    let semanaActual = this.getSemanaActual(lunesSemanaInicio);
+    let avanceReal = await (await this.planificacionService.getDataCurvaS(semanaInicio.obra.id)).dataReal[semanaActual-1];
+
+    return {semanaActual:semanaActual,porc_avance:Number(avanceReal).toFixed(2)};
+  }
+
+
+  getMonday(d:Date) {
+    var day = d.getDay(),
+    diff = d.getDate() - day + (day == 0 ? -6:1); // adjust when day is sunday
+    return new Date(d.setDate(diff));
+  }
+
+
+  getSemanaActual(lunesSemanaInicio:Date){
+    let fecha =  moment(lunesSemanaInicio);
+    if(fecha.isSame(moment(new Date()))){
+      return 1;
+    }
+    if(fecha.isAfter(moment(new Date()))){
+      return 0;
+    }
+
+    if(fecha.isBefore(moment(new Date()))){
+      /*console.log("fecha a hoy:",moment(new Date()));
+      console.log("fecha inicio",fecha);
+      let testDiff = moment.duration(moment(new Date()).diff(fecha));
+      console.log("diferencia as week",Math.round(testDiff.asWeeks()));
+      console.log("diferencia",moment(new Date()).diff(fecha,'days'));*/
+      return Math.floor((moment(new Date()).diff(fecha,'days')+1)/7)+1;
+    }
   }
 }

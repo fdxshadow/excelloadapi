@@ -6,7 +6,9 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from 'src/shared/auth.guard';
 import { Obra } from './obra.dto';
 import { ObrasService } from './obras.service';
 
@@ -54,5 +56,11 @@ export class ObrasController {
   @Get('areas/:obra_id')
   getAreasByObra(@Param('obra_id') obra_id: number){
     return this.obraService.getAreaByObra(obra_id);
+  }
+
+
+  @Get('estado/:id_usuario')
+  getEstadoObra(@Param('id_usuario') id_usuario: number){
+    return this.obraService.getEstadoObra(id_usuario);
   }
 }

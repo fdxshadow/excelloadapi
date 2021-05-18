@@ -6,4 +6,6 @@ export class Obra {
   @IsNotEmpty()
   @IsNumber()
   empresa: number;
+  @IsNotEmpty()
+  fecha_inicio: Date;
 }
