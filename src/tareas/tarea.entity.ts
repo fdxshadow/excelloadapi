@@ -40,7 +40,7 @@ export class TareaEntity {
   @Column()
   bloque: string;
 
-  @ManyToOne(() => PlanificacionEntity, (planificacion) => planificacion.tareas)
+  @ManyToOne(() => PlanificacionEntity, (planificacion) => planificacion.tareas,{onDelete:'CASCADE'})
   planificacion: PlanificacionEntity;
 
   @OneToMany(() => SemanasEntity, (semana) => semana.tarea)

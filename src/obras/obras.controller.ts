@@ -43,12 +43,12 @@ export class ObrasController {
     return this.obraService.getOne(id);
   }
 
-  @Put()
+  @Put(':id')
   updateObra(@Param('id') id: number, @Body() data) {
     return this.obraService.update(id, data);
   }
 
-  @Delete()
+  @Delete(':id')
   destroyObra(@Param('id') id: number) {
     return this.obraService.destroy(id);
   }

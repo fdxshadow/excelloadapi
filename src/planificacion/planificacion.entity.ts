@@ -10,7 +10,7 @@ export class PlanificacionEntity {
     @OneToMany(() => TareaEntity, (tarea)=> tarea.planificacion)
     tareas: TareaEntity[];
 
-    @OneToOne(() => ObraEntity)
+    @OneToOne(() => ObraEntity , {onDelete: 'CASCADE'})
     @JoinColumn()
     obra: ObraEntity;
 

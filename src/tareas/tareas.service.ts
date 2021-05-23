@@ -75,10 +75,15 @@ export class TareasService {
     let result = await  areas.map(async tA=>{
       tA['comienzo'] = tA['comienzo'].toLocaleDateString();
       tA['fin'] = tA['fin'].toLocaleDateString();
-      let semanaTarea = await this.semanaRepository.findOne({where:{tarea:tA['id'],semana: LessThanOrEqual(18)}, order:{semana:'DESC'}});
+      let semanaTarea = await this.semanaRepository.findOne({where:{tarea:tA['id'],semana: LessThanOrEqual(11)}, order:{semana:'DESC'}});
+      const carga_trabajo_sem =  await createQueryBuilder('semanas','s')
+      .select("SUM(carga_trabajo) as sumcarga")
+      .where(`tareaId = ${tA['id']}`)
+      .andWhere(`semana <=11`)
+      .getRawOne();
       tA['porc_real'] = semanaTarea?semanaTarea.trabajo_efectivo:0;
       let cargaTotal = await this.getCalcularPorcEsperado(tA['id']);
-      tA['porc_esperado'] = cargaTotal != null  && semanaTarea? (semanaTarea.carga_trabajo*100/cargaTotal).toFixed(2):0;
+      tA['porc_esperado'] = cargaTotal != null  && semanaTarea? (carga_trabajo_sem['sumcarga']*100/cargaTotal).toFixed(2):0;
       return tA;
     });
 

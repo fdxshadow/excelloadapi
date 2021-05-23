@@ -49,12 +49,22 @@ export class ObrasService {
   }
 
   async destroy(id: number) {
-    const obra = await this.obraRepository.findOne({ id });
+    /*const obra = await this.obraRepository.findOne({ id });
     if (!obra) {
       throw new HttpException('Obra no encontrada', HttpStatus.NOT_FOUND);
-    }
-    await this.obraRepository.delete({ id });
-    return { deleted: true };
+    }*/
+    /*await createQueryBuilder()
+    .delete()
+    .from('gerentes_obras_obras')
+    .where(`obrasId = ${id}`)
+    .execute();
+    return 1;*/
+    return await this.obraRepository.delete({ id })
+    /*this.obraRepository.delete({ id }).then(resp=>{
+      return resp;
+    }).catch(e=>{
+      console.log(e);
+    });*/
   }
 
   async getByEmpresa(id_empresa: number) {

@@ -16,6 +16,6 @@ export class SemanasEntity {
     @Column()
     trabajo_efectivo:string;
 
-    @ManyToOne(() => TareaEntity, (tarea) => tarea.semanas)
+    @ManyToOne(() => TareaEntity, (tarea) => tarea.semanas, {onDelete:'CASCADE'})
     tarea: TareaEntity;
 }

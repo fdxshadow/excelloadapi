@@ -98,12 +98,14 @@ export class UsuariosService {
     }
 
     if(usuario.tipo=='supervisor'){
-      const sup = await this.supervisorRepository.findOne({usuario});
+      const sup = await this.supervisorRepository.findOne({where:{usuario},relations:['obra']});
       if(!sup){
         throw new BadRequestException("Informacion de usuario no encontrada");
       }
+      console.log("supervisor obtenido",sup);
       const usuarioResponse = usuario.toResponseObject();
       usuarioResponse['area_responsable'] = sup.area_responsable;
+      usuarioResponse['obra']=sup.obra
       return usuarioResponse;
     }
     return usuario.toResponseObject();

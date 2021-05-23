@@ -15,7 +15,7 @@ export class GerenteEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToMany(() => ObraEntity)
+  @ManyToMany(() => ObraEntity,{onDelete:'CASCADE'})
   @JoinTable()
   obras: ObraEntity[];
 
