@@ -21,11 +21,6 @@ export class PlanificacionService {
 
   async cargar(data: Planificacion) {
     const { obra, planificacion } = data;
-    const planificacionFile = XLSX.read(planificacion.buffer, {
-      type: 'buffer',
-      cellDates: true,
-    });
-
 
     const planif = await this.planificacionRepository.findOne({obra:{id:obra}});
     if(planif){
@@ -34,6 +29,20 @@ export class PlanificacionService {
     
     const nuevaPlanificacion = await this.planificacionRepository.create({obra:{id:obra}});
     await this.planificacionRepository.save(nuevaPlanificacion);
+
+
+
+
+
+
+
+    const planificacionFile = XLSX.read(planificacion.buffer, {
+      type: 'buffer',
+      cellDates: true,
+    });
+
+
+    
 
     
 
