@@ -26,6 +26,15 @@ export class PlanificacionService {
       cellDates: true,
     });
 
+
+    const planif = await this.planificacionRepository.findOne({obra:{id:obra}});
+    if(planif){
+      throw new BadRequestException('La obra seleccionada, ya posee una planificacion cargada');
+    }
+    
+    const nuevaPlanificacion = await this.planificacionRepository.create({obra:{id:obra}});
+    await this.planificacionRepository.save(nuevaPlanificacion);
+
     
 
     const poryec4sem = XLSX.utils.sheet_to_json(
@@ -40,13 +49,7 @@ export class PlanificacionService {
     );
 
 
-    const planif = await this.planificacionRepository.findOne({obra:{id:obra}});
-    if(planif){
-      throw new BadRequestException('La obra seleccionada, ya posee una planificacion cargada');
-    }
-    
-    const nuevaPlanificacion = await this.planificacionRepository.create({obra:{id:obra}});
-    await this.planificacionRepository.save(nuevaPlanificacion);
+   
 
     poryec4sem.map(async (fila) => {
       if (fila['Resumen'] == 'No') {
