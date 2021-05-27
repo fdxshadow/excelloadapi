@@ -7,13 +7,13 @@ export class SemanasEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({nullable: true})
     semana: number;
 
-    @Column()
+    @Column({nullable: true})
     carga_trabajo:number;
 
-    @Column()
+    @Column({nullable: true})
     trabajo_efectivo:string;
 
     @ManyToOne(() => TareaEntity, (tarea) => tarea.semanas, {onDelete:'CASCADE'})

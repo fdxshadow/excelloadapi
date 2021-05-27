@@ -7,37 +7,37 @@ export class TareaEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({nullable: true})
   nombre: string;
 
-  @Column()
+  @Column({nullable: true})
   comienzo: Date;
 
-  @Column()
+  @Column({nullable: true})
   fin: Date;
 
-  @Column()
+  @Column({nullable: true})
   duracion: string;
 
-  @Column()
+  @Column({nullable: true})
   peso: string;
 
-  @Column()
+  @Column({nullable: true})
   trabajo:string;
 
-  @Column()
+  @Column({nullable: true})
   plan: string;
 
-  @Column()
+  @Column({nullable: true})
   real: string;
 
-  @Column()
+  @Column({nullable: true})
   grupo: string;
 
-  @Column()
+  @Column({nullable: true})
   area_responsable: string;
 
-  @Column()
+  @Column({nullable: true})
   bloque: string;
 
   @ManyToOne(() => PlanificacionEntity, (planificacion) => planificacion.tareas,{onDelete:'CASCADE'})
