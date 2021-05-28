@@ -64,4 +64,11 @@ export class TareasController {
     return this.tareaService.updatePorcAvanceSem(data);
   }
 
+
+  @Get('/byObra/:id_obra')
+  getTareasByObra(@Param('id_obra') id_obra:number){
+    return this.tareaService.getTareasByObra(id_obra);
+
+  }
+
 }

@@ -131,4 +131,13 @@ export class TareasService {
       return this.semanaRepository.save(atraso);
     }
   }
+
+  async getTareasByObra(id_obra){
+   const tareas = await createQueryBuilder('tareas','t')
+   .select('t.*')
+   .innerJoin('planificacion','p','p.id=t.planificacionId')
+   .where(`p.obraId=${id_obra}`)
+   .getRawMany();
+    return tareas;
+  }
 }
