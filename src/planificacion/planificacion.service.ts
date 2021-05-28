@@ -149,8 +149,10 @@ export class PlanificacionService {
     let programado = await this.calcularProgramado(sumSemanas,sumTrabajo);
     let avanceRealSemana = await this.calcularAcumulado(sumPesoCarga);
 
-    let primeraTarea=await this.tareaRepository.findOne({where:{planificacion:{id:planificacionByObra.id}},order:{id: 'DESC'}});
-    let semInicial = primeraTarea.comienzo;
+    //let primeraTarea=await this.tareaRepository.findOne({where:{planificacion:{id:planificacionByObra.id}},order:{id: 'DESC'}});
+    //let semInicial = primeraTarea.comienzo;
+    let semInicial = planificacionByObra.obra.fecha_inicio;
+
     let semanas = await sumSemanas.map((sem,i)=>{
       if(i==0){
         console.log("semana inicial sin editar",semInicial);
@@ -179,7 +181,7 @@ export class PlanificacionService {
 
 
   async getPlanificacion(id_obra:number){
-    const planificacionByObra = await this.planificacionRepository.findOne({where:{obra:id_obra}});
+    const planificacionByObra = await this.planificacionRepository.findOne({where:{obra:id_obra},relations:['obra']});
     if(!planificacionByObra){
       throw new BadRequestException('Planificacion no encontrada para la obra');
     }
