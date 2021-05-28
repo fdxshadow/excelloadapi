@@ -56,6 +56,7 @@ export class UsuariosService {
     console.log('usuario solicitando registrarse', data);
     const { nombre, email, password, tipo, obras,area_responsable } = data;
     let usuario = await this.usuarioRepository.findOne({ where: { email } });
+    console.log(usuario);
     if (usuario) {
       throw new BadRequestException('Usuario existente');
     }
@@ -69,6 +70,10 @@ export class UsuariosService {
         await this.administradorRepository.save(administrador);
         break;
       case 'supervisor':
+        if(!obras){
+          await this.usuarioRepository.delete(usuario);
+          throw new BadRequestException("Seleccione Obra para supervisor");
+        }
         const obraUsuario = await this.obraRepository.findOne({ id: obras });
         const supervisor = await this.supervisorRepository.create({
           usuario,
@@ -78,6 +83,10 @@ export class UsuariosService {
         await this.supervisorRepository.save(supervisor);
         break;
       case 'gerente':
+        if(!obras){
+          await this.usuarioRepository.delete(usuario);
+          throw new BadRequestException("Seleccione Obras para gerente");
+        }
         const obrasUsuario = await this.obraRepository.find({
           where: { id: In(obras) },
         });
