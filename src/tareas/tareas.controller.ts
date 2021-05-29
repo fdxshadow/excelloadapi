@@ -46,10 +46,10 @@ export class TareasController {
   destroyTarea(@Param('id') id: number) {
     return this.tareaService.destroy(id);
   }
-  @Get('/area/:area_responsable')
+  @Get('/area/:area_responsable/:sem')
   @UseGuards(new AuthGuard())
-  getTareasByArea(@Param('area_responsable') area: string, @Body() data){
-    return this.tareaService.getTareasByArea(area,data.id_token);
+  getTareasByArea(@Param('area_responsable') area: string,@Param('semana') semana:number, @Body() data){
+    return this.tareaService.getTareasByArea(area,data.id_token,semana);
   }
 
   @Get('/semanas/:tarea_id')

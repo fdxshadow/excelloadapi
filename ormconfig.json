@@ -5,7 +5,7 @@
   "username": "root",
   "password": "admin123",
   "database": "excel_load",
-  "logging": false,
+  "logging": true,
   "entities": ["dist/**/*.entity{.ts,.js}"],
   "synchronize": true
 }

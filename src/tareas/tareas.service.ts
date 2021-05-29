@@ -61,7 +61,7 @@ export class TareasService {
     return { deleted: true };
   }
 
-  async getTareasByArea(area:string,id_usuario){
+  async getTareasByArea(area:string,id_usuario,sem){
     const areas = await createQueryBuilder('planificacion','p')
     .select("t.*")
     .innerJoin("obras","o","p.obra=o.id")
@@ -75,11 +75,11 @@ export class TareasService {
     let result = await  areas.map(async tA=>{
       tA['comienzo'] = tA['comienzo'].toLocaleDateString();
       tA['fin'] = tA['fin'].toLocaleDateString();
-      let semanaTarea = await this.semanaRepository.findOne({where:{tarea:tA['id'],semana: LessThanOrEqual(11)}, order:{semana:'DESC'}});
+      let semanaTarea = await this.semanaRepository.findOne({where:{tarea:tA['id'],semana: LessThanOrEqual(sem)}, order:{semana:'DESC'}});
       const carga_trabajo_sem =  await createQueryBuilder('semanas','s')
       .select("SUM(carga_trabajo) as sumcarga")
       .where(`tareaId = ${tA['id']}`)
-      .andWhere(`semana <=11`)
+      .andWhere(`semana <=${sem}`)
       .getRawOne();
       tA['porc_real'] = semanaTarea?semanaTarea.trabajo_efectivo:0;
       let cargaTotal = await this.getCalcularPorcEsperado(tA['id']);
