@@ -48,7 +48,7 @@ export class TareasController {
   }
   @Get('/area/:area_responsable/:sem')
   @UseGuards(new AuthGuard())
-  getTareasByArea(@Param('area_responsable') area: string,@Param('semana') semana:number, @Body() data){
+  getTareasByArea(@Param('area_responsable') area: string,@Param('sem') semana:number, @Body() data){
     return this.tareaService.getTareasByArea(area,data.id_token,semana);
   }
 
