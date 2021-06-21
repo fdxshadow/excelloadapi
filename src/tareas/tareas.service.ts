@@ -1,6 +1,7 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { createQueryBuilder, LessThan, LessThanOrEqual, Repository } from 'typeorm';
+import { ObrasService } from 'src/obras/obras.service';
+import { createQueryBuilder, Repository } from 'typeorm';
 import { SemanasEntity } from './semanas.entity';
 import { TareaEntity } from './tarea.entity';
 
@@ -10,7 +11,8 @@ export class TareasService {
     @InjectRepository(TareaEntity)
     private tareasRepository: Repository<TareaEntity>,
     @InjectRepository(SemanasEntity)
-    private semanaRepository: Repository<SemanasEntity>
+    private semanaRepository: Repository<SemanasEntity>,
+    private obraService: ObrasService
   ) {}
 
   async getAll() {
@@ -62,6 +64,12 @@ export class TareasService {
   }
 
   async getTareasByArea(area:string,id_usuario,sem){
+
+    console.log("semana servicio tarea",sem);
+   
+    /*if(sem==undefined){
+      throw new BadRequestException('La semana actual es necesaria para obtener los registros');
+    }*/
     const areas = await createQueryBuilder('planificacion','p')
     .select("t.*")
     .innerJoin("obras","o","p.obra=o.id")
@@ -75,16 +83,6 @@ export class TareasService {
     let result = await  areas.map(async tA=>{
       tA['comienzo'] = tA['comienzo'].toLocaleDateString();
       tA['fin'] = tA['fin'].toLocaleDateString();
-      /*let semanaTarea = await this.semanaRepository.findOne({where:{tarea:tA['id'],semana: LessThanOrEqual(sem)}, order:{semana:'DESC'}});
-      const carga_trabajo_sem =  await createQueryBuilder('semanas','s')
-      .select("SUM(carga_trabajo) as sumcarga")
-      .where(`tareaId = ${tA['id']}`)
-      .andWhere(`semana <=${sem}`)
-      .getRawOne();
-      tA['porc_real'] = semanaTarea?semanaTarea.trabajo_efectivo:0;
-      let cargaTotal = await this.getCalcularPorcEsperado(tA['id']);
-      tA['porc_esperado'] = cargaTotal != null  && semanaTarea? (carga_trabajo_sem['sumcarga']*100/cargaTotal).toFixed(2):0;
-      return tA;*/
       const semanas = await this.getSemanasByTarea(tA['id']);
       let porc_esperado = 0;
       let porc_real = 0;
@@ -92,21 +90,11 @@ export class TareasService {
         porc_esperado += semFilt.carga_trabajo;
         porc_real += Number(semFilt.trabajo_efectivo);
       });
+
       
       tA['porc_real']=porc_real;
       tA['porc_esperado']=porc_esperado;
-
-
       return tA;
-      
-      
-
-
-
-
-
-
-
     });
 
     return Promise.all(result);

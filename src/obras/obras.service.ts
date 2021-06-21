@@ -109,10 +109,10 @@ export class ObrasService {
     if(!semanaInicio){
       throw new BadRequestException("No se encuentra obra asociada al supervisor");
     }
-    let lunesSemanaInicio = await this.getMonday(semanaInicio.obra.fecha_inicio);
-    let semanaActual = this.getSemanaActual(lunesSemanaInicio);
-    let avanceReal = await (await this.planificacionService.getDataCurvaS(semanaInicio.obra.id)).dataReal[semanaActual-1];
-
+    const lunesSemanaInicio = await this.getMonday(semanaInicio.obra.fecha_inicio);
+    const semanaActual = this.getSemanaActual(lunesSemanaInicio);
+    const dataReal = (await this.planificacionService.getDataCurvaS(semanaInicio.obra.id)).dataReal;
+    const avanceReal = dataReal.length >= semanaActual ? dataReal[semanaActual-1]:dataReal[dataReal.length - 1];
     return {semanaActual:semanaActual,porc_avance:Number(avanceReal).toFixed(2)};
   }
 

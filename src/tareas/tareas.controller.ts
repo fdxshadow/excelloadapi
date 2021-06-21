@@ -8,12 +8,14 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
+import { ObrasService } from 'src/obras/obras.service';
 import { AuthGuard } from 'src/shared/auth.guard';
+import { isUndefined } from 'util';
 import { TareasService } from './tareas.service';
 
 @Controller('tareas')
 export class TareasController {
-  constructor(private tareaService: TareasService) {}
+  constructor(private tareaService: TareasService, private obraService: ObrasService) {}
 
   @Get()
   findAllTareas() {
@@ -48,8 +50,13 @@ export class TareasController {
   }
   @Get('/area/:area_responsable/:sem')
   @UseGuards(new AuthGuard())
-  getTareasByArea(@Param('area_responsable') area: string,@Param('sem') semana:number, @Body() data){
-    return this.tareaService.getTareasByArea(area,data.id_token,semana);
+  async getTareasByArea(@Param('area_responsable') area: string,@Param('sem') semana:number, @Body() data){
+    if(semana>=0){
+      return this.tareaService.getTareasByArea(area,data.id_token,semana);
+    }else {
+      const estado = await this.obraService.getEstadoObra(data.id_token);
+      return this.tareaService.getTareasByArea(area,data.id_token,estado.semanaActual);
+    }
   }
 
   @Get('/semanas/:tarea_id')
