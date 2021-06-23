@@ -111,9 +111,11 @@ export class ObrasService {
     }
     const lunesSemanaInicio = await this.getMonday(semanaInicio.obra.fecha_inicio);
     const semanaActual = this.getSemanaActual(lunesSemanaInicio);
-    const dataReal = (await this.planificacionService.getDataCurvaS(semanaInicio.obra.id)).dataReal;
+    const curvaSResult =  await this.planificacionService.getDataCurvaS(semanaInicio.obra.id);
+    const dataReal =curvaSResult.dataReal;
     const avanceReal = dataReal.length >= semanaActual ? dataReal[semanaActual-1]:dataReal[dataReal.length - 1];
-    return {semanaActual:semanaActual,porc_avance:Number(avanceReal).toFixed(2)};
+    const avanceProg = curvaSResult.dataProgramado.length >= semanaActual ? curvaSResult.dataProgramado[semanaActual-1]:curvaSResult.dataProgramado[curvaSResult.dataProgramado.length - 1];
+    return {semanaActual:semanaActual,porc_avance:Number(avanceReal).toFixed(2), porc_prog: Number(avanceProg).toFixed(2)};
   }
 
 
