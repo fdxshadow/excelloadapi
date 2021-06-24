@@ -4,6 +4,7 @@ import { ObrasService } from 'src/obras/obras.service';
 import { createQueryBuilder, Repository } from 'typeorm';
 import { SemanasEntity } from './semanas.entity';
 import { TareaEntity } from './tarea.entity';
+import * as moment from  'moment';
 
 @Injectable()
 export class TareasService {
@@ -79,10 +80,9 @@ export class TareasService {
     .andWhere(`t.area_responsable='${area}'`)
     .getRawMany();
 
-
     let result = await  areas.map(async tA=>{
-      tA['comienzo'] = tA['comienzo'].toLocaleDateString();
-      tA['fin'] = tA['fin'].toLocaleDateString();
+      tA['comienzo'] = moment(tA['comienzo']).format("DD-MM-YY");//tA['comienzo'].toLocaleDateString();
+      tA['fin'] =  moment(tA['fin']).format("DD-MM-YY");//tA['fin'].toLocaleDateString();
       const semanas = await this.getSemanasByTarea(tA['id']);
       let porc_esperado = 0;
       let porc_real = 0;
@@ -92,8 +92,8 @@ export class TareasService {
       });
 
       
-      tA['porc_real']=porc_real;
-      tA['porc_esperado']=porc_esperado;
+      tA['porc_real']=Number(porc_real).toFixed(2);
+      tA['porc_esperado']=Number(porc_esperado).toFixed(2);
       return tA;
     });
 
