@@ -94,6 +94,8 @@ export class TareasService {
       
       tA['porc_real']=Number(porc_real).toFixed(2);
       tA['porc_esperado']=Number(porc_esperado).toFixed(2);
+      const semanaActualTarea = await semanas.find(s=> s.semana == sem);
+      tA['avance_semana']= (semanaActualTarea)?semanaActualTarea.trabajo_efectivo:0
       return tA;
     });
 
@@ -132,14 +134,35 @@ export class TareasService {
   }
 
   async updatePorcAvanceSem(semana){
-    if(semana['id']!=null){
+    const {id,avance_semana,semana_actual} = semana;
+
+
+    const semanaDb = await this.semanaRepository.findOne({tarea:id, semana:semana_actual});
+    if(semanaDb){
+      let porc_real = 0;
+      semanaDb.trabajo_efectivo = avance_semana
+      await this.semanaRepository.save(semanaDb);
+      const semanas = await this.getSemanasByTarea(id);
+      await semanas.filter(s=> s.semana<=semana_actual).forEach(semFilt=>{
+        porc_real += Number(semFilt.trabajo_efectivo);
+      });
+
+      return {nuevo_porc_real:porc_real}
+    }
+    //que hacer en caso de que la semana actual no exista en la planificacion con respecto a los datos de la tarea como carga_trabajo
+    /*else{
+      const nuevaSemanaTarea = this.semanaRepository.create({semana: semana['semana'],trabajo_efectivo:semana['trabajo_efectivo'],tarea:semana['tarea_id'],carga_trabajo:100});
+    }*/
+
+
+    /*if(semana['id']!=null){
       const semanaDb = await this.semanaRepository.findOne({where:{id:semana['id']}});
       semanaDb.trabajo_efectivo = semana['trabajo_efectivo'];
       return await this.semanaRepository.save(semanaDb);
     }else{
       const atraso = this.semanaRepository.create({semana: semana['semana'],trabajo_efectivo:semana['trabajo_efectivo'],tarea:semana['tarea_id'],carga_trabajo:100});
       return this.semanaRepository.save(atraso);
-    }
+    }*/
   }
 
   async getTareasByObra(id_obra){
