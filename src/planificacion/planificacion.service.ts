@@ -28,7 +28,7 @@ export class PlanificacionService {
     }
     
     const nuevaPlanificacion = await this.planificacionRepository.create({obra:{id:obra}});
-    await this.planificacionRepository.save(nuevaPlanificacion);
+    await this.planificacionRepository.save(nuevaPlanificacion)
 
 
 
@@ -58,17 +58,76 @@ export class PlanificacionService {
     );
 
 
-   
+    let last_resumen = null;
+
+    /*for (let index = 0; index < 10; index++) {
+      const fila = poryec4sem[index];
+      try {
+        if(fila['Resumen'] == 'Sí'){
+          console.log("fila resumen", fila);
+          const tarea = await this.tareaRepository.create({ 
+            nombre: fila['Nombre de tarea'],
+            grupo: fila['Grupos'],
+            duracion: fila['Duración'],
+            comienzo: fila['Comienzo'],
+            fin: fila['Fin'],
+            bloque: fila['Bloques'],
+            area_responsable: fila['OBRAS'],
+            peso: fila['PESO'],
+            trabajo: fila['Trabajo'],
+            planificacion: nuevaPlanificacion,
+            isResumen: true,
+            idResumenPadre:last_resumen
+          });
+          const tareaCreada= await this.tareaRepository.save(tarea);
+          last_resumen = tareaCreada.id;
+        }
+        if (fila['Resumen'] == 'No') {
+          let filaControl= await controlSem.find(con=>con[' Id ']==fila[' Id ']);
+          await this.creandoTarea(fila,filaControl, nuevaPlanificacion.id, last_resumen);
+        }
+      } catch (error) {
+        console.log(error);
+        throw new BadRequestException(error);
+        
+      }
+    }*/
 
     poryec4sem.map(async (fila) => {
-      if (fila['Resumen'] == 'No') {
-        let filaControl= await controlSem.find(con=>con[' Id ']==fila[' Id ']);
-        await this.creandoTarea(fila,filaControl, nuevaPlanificacion.id);
+      try {
+        if(fila['Resumen'] == 'Sí'){
+          console.log("fila resumen", fila);
+          const tarea = await this.tareaRepository.create({ 
+            nombre: fila['Nombre de tarea'],
+            grupo: fila['Grupos'],
+            duracion: fila['Duración'],
+            comienzo: fila['Comienzo'],
+            fin: fila['Fin'],
+            bloque: fila['Bloques'],
+            area_responsable: fila['OBRAS'],
+            peso: fila['PESO'],
+            trabajo: fila['Trabajo'],
+            planificacion: planificacion,
+            isResumen: true,
+            idResumenPadre:last_resumen
+          });
+          const tareaCreada= await this.tareaRepository.save(tarea);
+          last_resumen = tareaCreada.id;
+        }
+        if (fila['Resumen'] == 'No') {
+          let filaControl= await controlSem.find(con=>con[' Id ']==fila[' Id ']);
+          await this.creandoTarea(fila,filaControl, nuevaPlanificacion.id, last_resumen);
+        }
+      } catch (error) {
+        console.log(error);
+        throw new BadRequestException(error);
+        
       }
+      
     });
   }
 
-  async creandoTarea(fila, filaControl,planificacion) {
+  async creandoTarea(fila, filaControl,planificacion, id_resumen) {
     const {
       Grupos,
       Duración,
@@ -92,7 +151,9 @@ export class PlanificacionService {
       area_responsable: OBRAS,
       peso: PESO,
       trabajo: Trabajo,
-      planificacion: planificacion
+      planificacion: planificacion,
+      isResumen:false,
+      idResumenPadre:id_resumen
     });
     await this.tareaRepository.save(tarea);
     await this.cargarSemanas(tarea.id,rest,filaControl);
@@ -103,7 +164,7 @@ export class PlanificacionService {
     for (let index = 0; index <= 60; index++) {
       if(fila[`${index} `]!= undefined){
         //crear la semana y estoy
-        console.log("filaControlSem",filaControl[`${index} `]);
+        //console.log("filaControlSem",filaControl[`${index} `]);
         let filaControlSem = (filaControl[`${index} `]!=undefined)?filaControl[`${index} `]*100:0;
         //console.log("filaControlSem",filaControlSem);
         let semanaNueva = await this.semanaRepository.create({semana:index,tarea:{id},carga_trabajo:fila[`${index} `],trabajo_efectivo:filaControlSem.toString()});

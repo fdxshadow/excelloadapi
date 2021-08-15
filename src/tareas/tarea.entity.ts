@@ -40,6 +40,12 @@ export class TareaEntity {
   @Column({nullable: true, default: null})
   bloque: string;
 
+  @Column({default:false})
+  isResumen: boolean
+
+  @Column({nullable:true})
+  idResumenPadre:number
+
   @ManyToOne(() => PlanificacionEntity, (planificacion) => planificacion.tareas,{onDelete:'CASCADE'})
   planificacion: PlanificacionEntity;
 

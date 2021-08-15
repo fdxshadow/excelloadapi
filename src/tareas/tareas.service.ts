@@ -78,9 +78,12 @@ export class TareasService {
     .innerJoin("tareas","t","p.id=t.planificacion")
     .where(`s.usuarioId = ${id_usuario}`)
     .andWhere(`t.area_responsable='${area}'`)
+    .andWhere(`t.isResumen=false`)
     .getRawMany();
 
     let result = await  areas.map(async tA=>{
+      const tareaResumen = await this.tareasRepository.findOne({idResumenPadre:tA['idResumenPadre']});
+      tA['resumen'] = (tareaResumen)?tareaResumen.nombre:'Sin resumen';
       tA['comienzo'] = moment(tA['comienzo']).format("DD-MM-YY");//tA['comienzo'].toLocaleDateString();
       tA['fin'] =  moment(tA['fin']).format("DD-MM-YY");//tA['fin'].toLocaleDateString();
       const semanas = await this.getSemanasByTarea(tA['id']);
@@ -149,6 +152,8 @@ export class TareasService {
 
       return {nuevo_porc_real:porc_real}
     }
+    throw new BadRequestException('Tarea no tiene planificacion asignada en la semana actual');
+    
     //que hacer en caso de que la semana actual no exista en la planificacion con respecto a los datos de la tarea como carga_trabajo
     /*else{
       const nuevaSemanaTarea = this.semanaRepository.create({semana: semana['semana'],trabajo_efectivo:semana['trabajo_efectivo'],tarea:semana['tarea_id'],carga_trabajo:100});
