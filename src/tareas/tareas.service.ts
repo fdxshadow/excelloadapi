@@ -78,12 +78,12 @@ export class TareasService {
     .innerJoin("tareas","t","p.id=t.planificacion")
     .where(`s.usuarioId = ${id_usuario}`)
     .andWhere(`t.area_responsable='${area}'`)
-    .andWhere(`t.isResumen=false`)
+    //.andWhere(`t.isResumen=false`)
     .getRawMany();
 
     let result = await  areas.map(async tA=>{
-      const tareaResumen = await this.tareasRepository.findOne({idResumenPadre:tA['idResumenPadre']});
-      tA['resumen'] = (tareaResumen)?tareaResumen.nombre:'Sin resumen';
+      //const tareaResumen = await this.tareasRepository.findOne({idResumenPadre:tA['idResumenPadre']});
+      //tA['resumen'] = (tareaResumen)?tareaResumen.nombre:'Sin resumen';
       tA['comienzo'] = moment(tA['comienzo']).format("DD-MM-YY");//tA['comienzo'].toLocaleDateString();
       tA['fin'] =  moment(tA['fin']).format("DD-MM-YY");//tA['fin'].toLocaleDateString();
       const semanas = await this.getSemanasByTarea(tA['id']);
