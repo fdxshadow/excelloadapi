@@ -121,7 +121,14 @@ export class UsuariosService {
   }
 
   async deleteUsuario(id: number){
-    return await this.usuarioRepository.delete({ id });
+    const usuarioTipo=await this.usuarioRepository.findOne({id});
+    if(usuarioTipo.tipo=='administrador') return await this.administradorRepository.delete({id});
+    if(usuarioTipo.tipo=='gerente') return await this.gerenteRepository.delete({id});
+    if(usuarioTipo.tipo=='supervisor') return await this.supervisorRepository.delete({id});
+
+
+
+    //return await this.usuarioRepository.delete({ id });
   }
 
   async updateUsuarioData(id:number,nombre:string,email:string,obras:any){

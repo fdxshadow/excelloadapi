@@ -107,7 +107,7 @@ export class PlanificacionService {
             area_responsable: fila['OBRAS'],
             peso: fila['PESO'],
             trabajo: fila['Trabajo'],
-            planificacion: planificacion,
+            planificacion: nuevaPlanificacion,
             isResumen: true,
             idResumenPadre:last_resumen
           });
@@ -128,49 +128,60 @@ export class PlanificacionService {
   }
 
   async creandoTarea(fila, filaControl,planificacion, id_resumen) {
-    const {
-      Grupos,
-      Duración,
-      Comienzo,
-      Fin,
-      Bloques,
-      OBRAS,
-      PESO,
-      Trabajo,
-      ... rest
-    } = fila;
-    const nombre = fila['Nombre de tarea'];
+    try{
+      const {
+        Grupos,
+        Duración,
+        Comienzo,
+        Fin,
+        Bloques,
+        OBRAS,
+        PESO,
+        Trabajo,
+        ... rest
+      } = fila;
+      const nombre = fila['Nombre de tarea'];
 
-    const tarea = await this.tareaRepository.create({
-      nombre,
-      grupo: Grupos,
-      duracion: Duración,
-      comienzo: Comienzo,
-      fin: Fin,
-      bloque: Bloques,
-      area_responsable: OBRAS,
-      peso: PESO,
-      trabajo: Trabajo,
-      planificacion: planificacion,
-      isResumen:false,
-      idResumenPadre:id_resumen
-    });
-    await this.tareaRepository.save(tarea);
-    await this.cargarSemanas(tarea.id,rest,filaControl);
+      const tarea = await this.tareaRepository.create({
+        nombre,
+        grupo: Grupos,
+        duracion: Duración,
+        comienzo: Comienzo,
+        fin: Fin,
+        bloque: Bloques,
+        area_responsable: OBRAS,
+        peso: PESO,
+        trabajo: Trabajo,
+        planificacion: planificacion,
+        isResumen:false,
+        idResumenPadre:id_resumen
+      });
+      await this.tareaRepository.save(tarea);
+      await this.cargarSemanas(tarea.id,rest,filaControl);
+    }catch(error){
+      console.log("error creando tareas",error);
+      throw new BadRequestException(error);
+    }
   }
 
 
   async cargarSemanas(id, fila,filaControl){
-    for (let index = 0; index <= 60; index++) {
-      if(fila[`${index} `]!= undefined){
-        //crear la semana y estoy
-        //console.log("filaControlSem",filaControl[`${index} `]);
-        let filaControlSem = (filaControl[`${index} `]!=undefined)?filaControl[`${index} `]*100:0;
-        //console.log("filaControlSem",filaControlSem);
-        let semanaNueva = await this.semanaRepository.create({semana:index,tarea:{id},carga_trabajo:fila[`${index} `],trabajo_efectivo:filaControlSem.toString()});
-        await this.semanaRepository.save(semanaNueva);
+    try {
+      for (let index = 0; index <= 60; index++) {
+        if(fila[`${index} `]!= undefined){
+          //crear la semana y estoy
+          //console.log("filaControlSem",filaControl[`${index} `]);
+          let filaControlSem = (filaControl[`${index} `]!=undefined)?filaControl[`${index} `]*100:0;
+          //console.log("filaControlSem",filaControlSem);
+          let semanaNueva = await this.semanaRepository.create({semana:index,tarea:{id},carga_trabajo:fila[`${index} `],trabajo_efectivo:filaControlSem.toString()});
+          await this.semanaRepository.save(semanaNueva);
+        }
       }
+    } catch (error) {
+      console.log("error dentro de cargar semanas",error);
+      throw new BadRequestException(error);
     }
+    
   }
 
 
