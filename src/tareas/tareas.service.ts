@@ -78,7 +78,7 @@ export class TareasService {
     .innerJoin("tareas","t","p.id=t.planificacion")
     .where(`s.usuarioId = ${id_usuario}`)
     .andWhere(`t.area_responsable='${area}'`)
-    .orderBy('id', 'ASC')
+    .orderBy('id_interno', 'ASC')
     //.andWhere(`t.isResumen=false`)
     .getRawMany();
 

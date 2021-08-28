@@ -46,6 +46,9 @@ export class TareaEntity {
   @Column({nullable:true})
   idResumenPadre:number
 
+  @Column({default:0})
+  id_interno:number
+
   @ManyToOne(() => PlanificacionEntity, (planificacion) => planificacion.tareas,{onDelete:'CASCADE'})
   planificacion: PlanificacionEntity;
 

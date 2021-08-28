@@ -109,7 +109,8 @@ export class PlanificacionService {
             trabajo: fila['Trabajo'],
             planificacion: nuevaPlanificacion,
             isResumen: true,
-            idResumenPadre:last_resumen
+            idResumenPadre:last_resumen,
+            id_interno: fila[' Id ']
           });
           const tareaCreada= await this.tareaRepository.save(tarea);
           last_resumen = tareaCreada.id;
@@ -138,6 +139,7 @@ export class PlanificacionService {
         OBRAS,
         PESO,
         Trabajo,
+        Id,
         ... rest
       } = fila;
       const nombre = fila['Nombre de tarea'];
@@ -154,7 +156,8 @@ export class PlanificacionService {
         trabajo: Trabajo,
         planificacion: planificacion,
         isResumen:false,
-        idResumenPadre:id_resumen
+        idResumenPadre:id_resumen,
+        id_interno:fila[' Id ']
       });
       await this.tareaRepository.save(tarea);
       await this.cargarSemanas(tarea.id,rest,filaControl);
