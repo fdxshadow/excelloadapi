@@ -152,8 +152,25 @@ export class TareasService {
       });
 
       return {nuevo_porc_real:porc_real}
+    }else{
+      const tarea = await this.tareasRepository.findOne(id);
+      if(!tarea){
+        throw new BadRequestException('Tarea a actualizar no existe');
+      }
+      const trabajo_efectivo = (Number(tarea.trabajo)*(avance_semana/100)).toString();
+
+      const nuevaSemana = await this.semanaRepository.create({semana:semana_actual,trabajo_efectivo:trabajo_efectivo,carga_trabajo:avance_semana, tarea:id});
+
+      await this.semanaRepository.save(nuevaSemana);
+      let porc_real = 0;
+      const semanas = await this.getSemanasByTarea(id);
+      await semanas.filter(s=> s.semana<=semana_actual).forEach(semFilt=>{
+        porc_real += Number(semFilt.trabajo_efectivo);
+      });
+
+      return {nuevo_porc_real:porc_real}
     }
-    throw new BadRequestException('Tarea no tiene planificacion asignada en la semana actual');
+    
     
     //que hacer en caso de que la semana actual no exista en la planificacion con respecto a los datos de la tarea como carga_trabajo
     /*else{
