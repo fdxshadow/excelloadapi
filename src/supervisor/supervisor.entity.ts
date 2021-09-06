@@ -21,7 +21,7 @@ export class SupervisorEntity {
   @JoinColumn()
   usuario: UsuarioEntity;
 
-  @ManyToOne(() => ObraEntity, (obra) => obra.supervisores,{ onDelete: 'CASCADE' })
+  @ManyToOne(() => ObraEntity, (obra) => obra.supervisores, { onDelete: 'CASCADE' })
   obra: ObraEntity;
 
 

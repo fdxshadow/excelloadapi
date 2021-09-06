@@ -121,10 +121,12 @@ export class UsuariosService {
   }
 
   async deleteUsuario(id: number){
+    //falta probar la eliminacion
     const usuarioTipo=await this.usuarioRepository.findOne({id});
-    if(usuarioTipo.tipo=='administrador') return await this.administradorRepository.delete({id});
-    if(usuarioTipo.tipo=='gerente') return await this.gerenteRepository.delete({id});
-    if(usuarioTipo.tipo=='supervisor') return await this.supervisorRepository.delete({id});
+    await this.usuarioRepository.delete(usuarioTipo);
+    if(usuarioTipo.tipo=='administrador') return await this.administradorRepository.delete({usuario:{id}})
+    if(usuarioTipo.tipo=='gerente') return await this.gerenteRepository.delete({usuario:{id}});
+    if(usuarioTipo.tipo=='supervisor') return await this.supervisorRepository.delete({usuario:{id}});
 
 
 
