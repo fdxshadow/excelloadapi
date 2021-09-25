@@ -49,20 +49,22 @@ export class PlanificacionService {
     const poryec4sem = XLSX.utils.sheet_to_json(
       //planificacionFile.Sheets['Programación de obra'],
       planificacionFile.Sheets['Programación Obra'],
-    );
+    ).filter(f=> f['Nombre de tarea'].trim()!='x');
 
 
     const controlSem = XLSX.utils.sheet_to_json(
       //planificacionFile.Sheets['Programación de obra'],
       planificacionFile.Sheets['Datos reales sem'],
-    );
+    ).filter(f=> f['Nombre de tarea'].trim()!='x');
 
 
     let last_resumen = null;
 
-    /*for (let index = 0; index < 10; index++) {
+    /*for (let index = 0; index < 3; index++) {
       const fila = poryec4sem[index];
-      try {
+      console.log("Fila completa",fila);
+      console.log("fila Id",fila['Id']);
+      /*try {
         if(fila['Resumen'] == 'Sí'){
           console.log("fila resumen", fila);
           const tarea = await this.tareaRepository.create({ 
@@ -94,6 +96,7 @@ export class PlanificacionService {
     }*/
 
     poryec4sem.map(async (fila) => {
+      console.log("fila id interno",fila[' Id ']);
       try {
         if(fila['Resumen'] == 'Sí'){
           console.log("fila resumen", fila);

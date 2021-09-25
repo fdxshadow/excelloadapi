@@ -157,9 +157,10 @@ export class TareasService {
       if(!tarea){
         throw new BadRequestException('Tarea a actualizar no existe');
       }
-      const trabajo_efectivo = (Number(tarea.trabajo)*(avance_semana/100)).toString();
+      //const trabajo_efectivo = (Number(tarea.trabajo)*(avance_semana/100)).toString();
+      const carga_trabajo = (Number(tarea.trabajo)*avance_semana)/100
 
-      const nuevaSemana = await this.semanaRepository.create({semana:semana_actual,trabajo_efectivo:trabajo_efectivo,carga_trabajo:avance_semana, tarea:id});
+      const nuevaSemana = await this.semanaRepository.create({semana:semana_actual,trabajo_efectivo:avance_semana,carga_trabajo:carga_trabajo, tarea:id});
 
       await this.semanaRepository.save(nuevaSemana);
       let porc_real = 0;
