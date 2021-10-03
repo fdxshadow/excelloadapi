@@ -49,13 +49,13 @@ export class PlanificacionService {
     const poryec4sem = XLSX.utils.sheet_to_json(
       //planificacionFile.Sheets['Programación de obra'],
       planificacionFile.Sheets['Programación Obra'],
-    ).filter(f=> f['Nombre de tarea'].trim()!='x');
+    ).filter(f=> f['Nombre de tarea'].trim()!='x' && f['Nombre de tarea'].trim()!='');
 
 
     const controlSem = XLSX.utils.sheet_to_json(
       //planificacionFile.Sheets['Programación de obra'],
       planificacionFile.Sheets['Datos reales sem'],
-    ).filter(f=> f['Nombre de tarea'].trim()!='x');
+    ).filter(f=> f['Nombre de tarea'].trim()!='x' && f['Nombre de tarea'].trim()!='');
 
 
     let last_resumen = null;
@@ -114,12 +114,14 @@ export class PlanificacionService {
             isResumen: true,
             idResumenPadre:last_resumen,
             id_interno: fila[' Id ']
+            //id_interno: fila['Id']
           });
           const tareaCreada= await this.tareaRepository.save(tarea);
           last_resumen = tareaCreada.id;
         }
         if (fila['Resumen'] == 'No') {
           let filaControl= await controlSem.find(con=>con[' Id ']==fila[' Id ']);
+          //let filaControl= await controlSem.find(con=>con['Id']==fila['Id']);
           await this.creandoTarea(fila,filaControl, nuevaPlanificacion.id, last_resumen);
         }
       } catch (error) {
@@ -161,6 +163,7 @@ export class PlanificacionService {
         isResumen:false,
         idResumenPadre:id_resumen,
         id_interno:fila[' Id ']
+        //id_interno: fila['Id']
       });
       await this.tareaRepository.save(tarea);
       await this.cargarSemanas(tarea.id,rest,filaControl);
