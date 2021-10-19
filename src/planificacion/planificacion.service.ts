@@ -217,6 +217,7 @@ export class PlanificacionService {
     const sumTrabajo = await createQueryBuilder('tareas','t')
           .select("SUM(t.trabajo) as sumTrabajo")
           .where(`planificacionId = ${planificacionByObra.id}`)
+          .andWhere(`t.isResumen = 0`)
           .getRawOne();
 
     const sumSemanas = await createQueryBuilder('tareas','t')
@@ -226,7 +227,7 @@ export class PlanificacionService {
           .groupBy("semana")
           .getRawMany();
     
-    //console.log("suma de trabajo",sumTrabajo);
+    console.log("suma de trabajo",sumTrabajo);
     let programado = await this.calcularProgramado(sumSemanas,sumTrabajo);
     let avanceRealSemana = await this.calcularAcumulado(sumPesoCarga);
 
@@ -288,6 +289,7 @@ export class PlanificacionService {
       let result_semana = await acumulado.reduce((acc,curr)=>{
         return {sumcarga:Number(acc['sumcarga']) + Number(curr['sumcarga'])};
       });
+      console.log("result", result_semana);
       return ((result_semana.sumcarga/sumtrabajo['sumTrabajo'])*100);
     });
     return  Promise.all(programado);
@@ -314,7 +316,7 @@ export class PlanificacionService {
 
   async getVariacionSup(id_obra:number,sem:number){
     const planificacionByObra = await this.getPlanificacion(id_obra);
-    const tareasObra = await this.tareaRepository.find({select:['id','nombre','trabajo','area_responsable','peso'],where:{planificacion:planificacionByObra},relations:['semanas']});
+    const tareasObra = await this.tareaRepository.find({select:['id','nombre','trabajo','area_responsable','peso'],where:{planificacion:planificacionByObra, isResumen:0},relations:['semanas']});
     let tareasCalculadas = await this.getAvanceProgramadoReal(tareasObra);
     //return tareasCalculadas;
     let porcVariacionAgrup = await this.agruparTipo(tareasCalculadas,sem);
